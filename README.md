@@ -6,6 +6,31 @@ An end-to-end Data Engineering pipeline that automatically extracts live weather
 This project demonstrates core ETL concepts, API integration, data modeling, and automated task scheduling.
 
 ## 🏗️ Architecture & Data Flow
+```mermaid
+graph TD
+    subgraph Orchestration
+        A[Windows Task Scheduler]
+    end
+
+    subgraph ETL Process
+        B[Python Script: weather_etl.py]
+        C[Pandas: Data Transformation]
+    end
+
+    subgraph External Source
+        D((OpenWeatherMap API))
+    end
+
+    subgraph Local Storage
+        E[(PostgreSQL Database)]
+    end
+
+    A -->|Triggers Daily at 9:00 AM| B
+    B -->|1. Extracts Weather Data| D
+    D -.->|Returns JSON Payload| B
+    B -->|2. Cleans & Flattens| C
+    C -->|3. Loads via SQLAlchemy| E
+```
 1. **Extract:** Python script calls the OpenWeatherMap REST API to fetch real-time climate data for New York, London, Tokyo, Sydney, and Mumbai.
 2. **Transform:** Raw nested JSON data is flattened and cleaned using Pandas. Timezones are standardized, and unneeded metadata is filtered out.
 3. **Load:** The structured DataFrame is loaded into a local PostgreSQL database using SQLAlchemy.
